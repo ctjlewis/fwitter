@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { ToastContainer, toast } from 'react-toastify'
+import React from "react";
+import PropTypes from "prop-types";
+import { ToastContainer, toast } from "react-toastify";
 
-const Layout = props => {
+const Layout = (props) => {
   return (
     <div className="page">
       <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} />
@@ -12,11 +12,11 @@ const Layout = props => {
       ></link>
       <div className="body-container">{props.children}</div>
     </div>
-  )
-}
+  );
+};
 
 Layout.propTypes = {
-  children: PropTypes.node
-}
+  children: PropTypes.node,
+};
 
-export default Layout
+export default Layout;

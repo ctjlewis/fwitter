@@ -1,5 +1,5 @@
-const faunadb = require('faunadb')
-const q = faunadb.query
+const faunadb = require("faunadb");
+const q = faunadb.query;
 
 const {
   CreateIndex,
@@ -20,8 +20,8 @@ const {
   Filter,
   GT,
   Union,
-  Distinct
-} = q
+  Distinct,
+} = q;
 
 /** ********************** Searching ************************/
 /* We'll create indexes for an autocompletion functionality.
@@ -48,20 +48,20 @@ const {
 // }
 
 const CreateHashtagsByWordparts = CreateIndex({
-  name: 'hashtags_by_wordparts',
-  source: Collection('hashtags'),
+  name: "hashtags_by_wordparts",
+  source: Collection("hashtags"),
   // wordparts is an array. Using it in an index will index
   // each of the parts in this array. As a result any part of the word will match in this index.
   terms: [
     {
-      field: ['data', 'wordparts']
-    }
+      field: ["data", "wordparts"],
+    },
   ],
   // this is for searching, it doesn't matter that our index is a few milliseconds/seconds behind.
   // serialized false means that our reads will return faster which is important for searching.
   // but you should not rely on it for logic as you can't expect to read immediately what you have written.
-  serialized: false
-})
+  serialized: false,
+});
 
 // --- Step 2 ---
 // Sorting the results with a binding!
@@ -69,39 +69,41 @@ const CreateHashtagsByWordparts = CreateIndex({
 // The length of the original word is the determining factor. We do not have to store this length in the document,
 // we can get it with a calculated field or in fauna terms: 'a binding'.
 const CreateHashtagsByWordpartsWithBinding = CreateIndex({
-  name: 'hashtags_by_wordparts',
+  name: "hashtags_by_wordparts",
   // we actually want to sort on the longest match, how do we do that?
   // With a binding!
   source: [
     {
-      collection: Collection('hashtags'),
+      collection: Collection("hashtags"),
       fields: {
         length: Query(
           Lambda(
-            'hashtag',
-            q.Map(Select(['data', 'wordparts'], Var('hashtag')), wordpart => Length(Var('wordpart')))
+            "hashtag",
+            q.Map(Select(["data", "wordparts"], Var("hashtag")), (wordpart) =>
+              Length(Var("wordpart"))
+            )
           )
-        )
-      }
-    }
+        ),
+      },
+    },
   ],
   terms: [
     {
-      field: ['data', 'wordparts']
-    }
+      field: ["data", "wordparts"],
+    },
   ],
   // values are 'range indexed' and therefore sorted in the order you provide them
   // we will also need the reference to the actual tag! We will place this second
   // since else the elements will be sorted by reference first.
   values: [
     {
-      binding: 'length',
-      reverse: true
+      binding: "length",
+      reverse: true,
     },
-    { field: ['ref'] }
+    { field: ["ref"] },
   ],
-  serialized: false
-})
+  serialized: false,
+});
 
 // --- Step 3 ---
 // We can index multiple collections !
@@ -110,40 +112,48 @@ const CreateHashtagsByWordpartsWithBinding = CreateIndex({
 // In this case we decided to let users and accounts have the same property 'wordparts'.
 // the users property has a different name, we can easily fix that with bindings as well.
 const CreateHashtagsAndUsersByWordpartsWithBinding = CreateIndex({
-  name: 'hashtags_and_users_by_wordparts',
+  name: "hashtags_and_users_by_wordparts",
   // we actually want to sort to get the shortest word that matches first
   source: [
     {
-      collection: Collection('hashtags'),
+      collection: Collection("hashtags"),
       fields: {
         // We can use bindings to make sure that fields of different collections
         // have the same name in our index (e.g. in case wordparts in users and hashtags)
         // would be stored slightly differently (user has an extra key in the path 'alias' in the below example)
-        length: Query(Lambda('hashtag', Length(Select(['data', 'name'], Var('hashtag'))))),
-        wordparts: Query(Lambda('hashtag', Select(['data', 'wordparts'], Var('hashtag'))))
-      }
+        length: Query(
+          Lambda("hashtag", Length(Select(["data", "name"], Var("hashtag"))))
+        ),
+        wordparts: Query(
+          Lambda("hashtag", Select(["data", "wordparts"], Var("hashtag")))
+        ),
+      },
     },
     {
-      collection: Collection('users'),
+      collection: Collection("users"),
       fields: {
-        length: Query(Lambda('user', Length(Select(['data', 'alias', 'name'], Var('user'))))),
-        wordparts: Query(Lambda('user', Select(['data', 'alias', 'wordparts'], Var('user'))))
-      }
-    }
+        length: Query(
+          Lambda("user", Length(Select(["data", "alias", "name"], Var("user"))))
+        ),
+        wordparts: Query(
+          Lambda("user", Select(["data", "alias", "wordparts"], Var("user")))
+        ),
+      },
+    },
   ],
   terms: [
     {
-      binding: 'wordparts'
-    }
+      binding: "wordparts",
+    },
   ],
   values: [
     {
-      binding: 'length'
+      binding: "length",
     },
-    { field: ['ref'] }
+    { field: ["ref"] },
   ],
-  serialized: false
-})
+  serialized: false,
+});
 
 // --- Step 4 ---
 // We do not need to store these wordparts.. that can actually be hanlded
@@ -161,52 +171,69 @@ function WordPartGenerator(WordVar) {
         // Setting it to [ 0 ] would only create the word itself, Setting it to [0, 1] would result in the word itself
         // and all ngrams that are one character shorter, etc..
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        Lambda('index', Subtract(Length(WordVar), Var('index')))
+        Lambda("index", Subtract(Length(WordVar), Var("index")))
       ),
       indexesFiltered: Filter(
-        Var('indexes'),
+        Var("indexes"),
         // filter out the ones below 0
-        Lambda('l', GT(Var('l'), 0))
+        Lambda("l", GT(Var("l"), 0))
       ),
-      ngramsArray: q.Map(Var('indexesFiltered'), Lambda('l', NGram(LowerCase(WordVar), Var('l'), Var('l'))))
+      ngramsArray: q.Map(
+        Var("indexesFiltered"),
+        Lambda("l", NGram(LowerCase(WordVar), Var("l"), Var("l")))
+      ),
     },
-    Var('ngramsArray')
-  )
+    Var("ngramsArray")
+  );
 }
 
 const CreateHashtagsAndUsersByWordpartsWithBinding2 = CreateIndex({
-  name: 'hashtags_and_users_by_wordparts',
+  name: "hashtags_and_users_by_wordparts",
   // we actually want to sort to get the shortest word that matches first
   source: [
     {
       // If your collections have the same property tht you want to access you can pass a list to the collection
-      collection: [Collection('hashtags'), Collection('users')],
+      collection: [Collection("hashtags"), Collection("users")],
       fields: {
-        length: Query(Lambda('hashtagOrUser', Length(Select(['data', 'name'], Var('hashtagOrUser'))))),
+        length: Query(
+          Lambda(
+            "hashtagOrUser",
+            Length(Select(["data", "name"], Var("hashtagOrUser")))
+          )
+        ),
         wordparts: Query(
-          Lambda('hashtagOrUser', Distinct(Union(WordPartGenerator(Select(['data', 'name'], Var('hashtagOrUser'))))))
-        )
-      }
-    }
+          Lambda(
+            "hashtagOrUser",
+            Distinct(
+              Union(
+                WordPartGenerator(
+                  Select(["data", "name"], Var("hashtagOrUser"))
+                )
+              )
+            )
+          )
+        ),
+      },
+    },
   ],
   terms: [
     {
-      binding: 'wordparts'
-    }
+      binding: "wordparts",
+    },
   ],
   // values are 'range indexed' and therefore sorted in the order you provide them
   // we will also need the reference to the actual tag! We will place this second
   // since else the elements will be sorted by reference first.
   values: [
     {
-      binding: 'length'
+      binding: "length",
     },
-    { field: ['ref'] }
+    { field: ["ref"] },
   ],
   // serialized for an index that we will use for searching is not necessary.
   // false is the fault.
-  serialized: false
-})
+  serialized: false,
+});
 
 /* Finally, if we need the binding to be different depending on the collection
  * we can do that as well. In this case we are not using this example since this type of
@@ -215,62 +242,79 @@ const CreateHashtagsAndUsersByWordpartsWithBinding2 = CreateIndex({
  * (this delay might make people think the app is broken when they launch it themselves)
  */
 const CreateHashtagsAndUsersByWordpartsWithBinding3 = CreateIndex({
-  name: 'hashtags_and_users_by_wordparts',
+  name: "hashtags_and_users_by_wordparts",
   // we actually want to sort to get the shortest word that matches first
   source: [
     {
-      collection: Collection('hashtags'),
+      collection: Collection("hashtags"),
       fields: {
-        length: Query(Lambda('hashtag', Length(Select(['data', 'name'], Var('hashtag'))))),
-        wordparts: Query(Lambda('hashtag', Union(WordPartGenerator(Select(['data', 'name'], Var('hashtag'))))))
-      }
-    },
-    {
-      collection: Collection('users'),
-      fields: {
-        length: Query(Lambda('user', Length(Select(['data', 'name'], Var('user'))))),
+        length: Query(
+          Lambda("hashtag", Length(Select(["data", "name"], Var("hashtag"))))
+        ),
         wordparts: Query(
           Lambda(
-            'user',
+            "hashtag",
+            Union(WordPartGenerator(Select(["data", "name"], Var("hashtag"))))
+          )
+        ),
+      },
+    },
+    {
+      collection: Collection("users"),
+      fields: {
+        length: Query(
+          Lambda("user", Length(Select(["data", "name"], Var("user"))))
+        ),
+        wordparts: Query(
+          Lambda(
+            "user",
             Union(
               // We'll search both on the name as the alias.
-              Union(WordPartGenerator(Select(['data', 'name'], Var('user')))),
-              Union(WordPartGenerator(Select(['data', 'alias'], Var('user'))))
+              Union(WordPartGenerator(Select(["data", "name"], Var("user")))),
+              Union(WordPartGenerator(Select(["data", "alias"], Var("user"))))
             )
           )
-        )
-      }
-    }
+        ),
+      },
+    },
   ],
   terms: [
     {
-      binding: 'wordparts'
-    }
+      binding: "wordparts",
+    },
   ],
   // values are 'range indexed' and therefore sorted in the order you provide them
   // we will also need the reference to the actual tag! We will place this second
   // since else the elements will be sorted by reference first.
   values: [
     {
-      binding: 'length'
+      binding: "length",
     },
-    { field: ['ref'] }
+    { field: ["ref"] },
   ],
   // serialized for an index that we will use for searching is not necessary.
   // false is the fault.
-  serialized: false
-})
+  serialized: false,
+});
 
 async function createSearchIndexes(client) {
   await client.query(
-    If(Exists(Index('hashtags_and_users_by_wordparts')), true, CreateHashtagsAndUsersByWordpartsWithBinding2)
-  )
+    If(
+      Exists(Index("hashtags_and_users_by_wordparts")),
+      true,
+      CreateHashtagsAndUsersByWordpartsWithBinding2
+    )
+  );
 }
 
 async function deleteSearchIndexes(client) {
   await client.query(
-    If(Exists(Index('hashtags_and_users_by_wordparts')), true, Delete(Index('hashtags_and_users_by_wordparts')))
-  )
+    If(
+      Exists(Index("hashtags_and_users_by_wordparts")),
+      true,
+      Delete(Index("hashtags_and_users_by_wordparts"))
+    )
+  );
 }
 
-export { createSearchIndexes, deleteSearchIndexes }
+export { createSearchIndexes, deleteSearchIndexes };

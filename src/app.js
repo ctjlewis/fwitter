@@ -1,28 +1,28 @@
-import React, { useEffect } from 'react'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import Home from './pages/home'
-import Login from './pages/login'
-import User from './pages/user'
-import Tag from './pages/tag'
-import Register from './pages/register'
-import Layout from './components/layout'
-import { SessionProvider, sessionReducer } from './context/session'
+import Home from "./pages/home";
+import Login from "./pages/login";
+import User from "./pages/user";
+import Tag from "./pages/tag";
+import Register from "./pages/register";
+import Layout from "./components/layout";
+import { SessionProvider, sessionReducer } from "./context/session";
 
 const App = () => {
-  const [state, dispatch] = React.useReducer(sessionReducer, { user: null })
+  const [state, dispatch] = React.useReducer(sessionReducer, { user: null });
 
-  const loadScript = url => {
-    const script = document.createElement('script')
-    script.async = true
-    script.src = url
-    document.head.appendChild(script)
-  }
+  const loadScript = (url) => {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = url;
+    document.head.appendChild(script);
+  };
 
   useEffect(() => {
     // Load all cloudinary scripts
-    loadScript('https://widget.cloudinary.com/v2.0/global/all.js')
-  }, [])
+    loadScript("https://widget.cloudinary.com/v2.0/global/all.js");
+  }, []);
 
   // Return the header and either show an error or render the loaded profiles.
   return (
@@ -47,7 +47,7 @@ const App = () => {
         </SessionProvider>
       </Router>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default App
+export default App;
