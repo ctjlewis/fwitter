@@ -106,7 +106,7 @@ it("The bootstrap role has the right to call login and register", function () {
       .then(() => login(localClient, "test@test.com", "testtest"))
   ).then(([err, result]) => {
     expect(err).toBe(null);
-  });
+  });z
 }, 60000);
 
 // The function has a role attached to it to be able to create accounts or fetch accounts respecitively.

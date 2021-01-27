@@ -22,7 +22,7 @@ import { follow } from "./queries/followers";
 
 class QueryManager {
   constructor(token) {
-    // A client is just a wrapper, it does not create a persitant connection
+    // A client is just a wrapper, it does not create a persistent connection
     // FaunaDB behaves like an API and will include the token on each request.
     this.bootstrapToken =
       token || process.env.REACT_APP_LOCAL___BOOTSTRAP_FAUNADB_KEY;

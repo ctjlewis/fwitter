@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useContext } from "react";
-import Feed from "../components/feed";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import Nav from "./../components/nav";
-import Search from "./../components/search";
-import Fweeter from "../components/fweeter";
+import SessionContext from "../context/session";
+import Feed from "../components/feed";
+import Search from "../components/search";
+import Nav from "../components/nav";
+
 import { faunaQueries } from "../fauna/query-manager";
 import { safeVerifyError } from "../fauna/helpers/errors";
-import { toast } from "react-toastify";
-import SessionContext from "../context/session";
+import { ApplicationStateAndSetter } from "../util/types";
 
-const Home = () => {
-  const [state, setState] = useState({
+const TagPage = () => {
+  const { tag }: { tag?: string } = useParams();
+
+  const [state, setState]: ApplicationStateAndSetter = useState({
     fweets: [],
     loaded: false,
     error: false,
@@ -24,28 +28,28 @@ const Home = () => {
     if (user) {
       setState({ error: null, fweets: [], loaded: false });
       faunaQueries
-        .getFweets()
+        .getFweetsByTag(tag)
         .then((result) => {
-          console.log("fweets", result);
+          console.log("tagresults", result);
           setState({
             fweets: result,
             loaded: true,
           });
         })
         .catch((err) => {
-          console.log(err);
           const rawError = safeVerifyError(err, [
             "requestResult",
             "responseRaw",
           ]);
-          if (rawError && rawError.includes("Rate limiting")) {
+          if (rawError.includes("Rate limiting")) {
             setState({
               error: { message: "Rate-limiting" },
               fweets: [],
               loaded: true,
             });
             toast.warn("You are reloading too fast");
-          } else if (rawError && rawError.includes("permission denied")) {
+          } else if (rawError.includes("permission denied")) {
+            console.log(err);
             setState({
               error: { message: "Permission denied!" },
               fweets: [],
@@ -58,28 +62,7 @@ const Home = () => {
           }
         });
     }
-  }, [user]);
-
-  const handleCreateFweet = (message, asset) => {
-    return faunaQueries
-      .createFweet(message, asset)
-      .then((fweetArray) => {
-        setState({
-          fweets: fweetArray.concat(state.fweets),
-          loaded: true,
-        });
-        toast.success("Fweeted");
-      })
-      .catch((err) => {
-        const rawError = safeVerifyError(err, ["requestResult", "responseRaw"]);
-        if (rawError.includes("Rate limiting")) {
-          toast.warn("You are fweeting too fast");
-        } else {
-          console.error("error on Fweet", err);
-          toast.error("Fweet failed");
-        }
-      });
-  };
+  }, [user, tag]);
 
   const update = (fweets, loaded, error) => {
     setState({
@@ -93,9 +76,7 @@ const Home = () => {
     <React.Fragment>
       <Nav />
       <div className="fweeter-and-feed-container">
-        {user ? (
-          <Fweeter handleCreateFweet={handleCreateFweet}></Fweeter>
-        ) : null}
+        <div className="feed-title">{"#" + tag}</div>
         <Feed
           update={update}
           error={state.error}
@@ -108,4 +89,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default TagPage;

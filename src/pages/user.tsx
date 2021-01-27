@@ -4,17 +4,18 @@ import { toast } from "react-toastify";
 
 import SessionContext from "../context/session";
 import Feed from "../components/feed";
-import Search from "./../components/search";
-import Nav from "./../components/nav";
+import Search from "../components/search";
+import Nav from "../components/nav";
 
 import { faunaQueries } from "../fauna/query-manager";
 import { safeVerifyError } from "../fauna/helpers/errors";
+import { ApplicationStateAndSetter } from "../util/types";
 
 const UserPage = () => {
   // The userid in the url
-  const { authorAlias } = useParams();
+  const { authorAlias }: { authorAlias?: string } = useParams();
 
-  const [state, setState] = useState({
+  const [state, setState]: ApplicationStateAndSetter = useState({
     fweets: [],
     loaded: false,
     error: false,

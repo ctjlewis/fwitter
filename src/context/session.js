@@ -1,6 +1,8 @@
 import React from "react";
 
-const SessionContext = React.createContext({});
+const SessionContext = React.createContext({
+  state: {},
+});
 
 export const sessionReducer = (state, action) => {
   switch (action.type) {
