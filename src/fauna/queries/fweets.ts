@@ -424,7 +424,7 @@ function GetFweetsWithUsersJoinExample2(client, email) {
 // a follower and an author which keeps how popular that author is to that specific follower.
 // We have built an index ('followerstats_by_user_popularity') using bindings (see ./../setup/followers) that calculates
 // a measure of 'popularity' and de decays it by incorporating the unix start timestamp.
-function GetFweets(client) {
+function GetFweets() {
   const FQLStatement = GetFweetsWithUsersMapGetGeneric(
     // Since we start of here with followerstats index (a ref we don't need afterwards, we can use join here!)
     q.Map(

@@ -6,14 +6,14 @@ import {
   GetFweets,
   GetFweetsByTag,
   GetFweetsByAuthor,
-} from "./../queries/fweets";
-import { Follow } from "./../queries/followers";
+} from "../queries/fweets";
+import { Follow } from "../queries/followers";
 import {
   RegisterWithUser,
   RegisterAccount,
   LoginAccount,
   LoginAccountExample1,
-} from "./../queries/auth";
+} from "../queries/auth";
 
 const faunadb = require("faunadb");
 const q = faunadb.query;

@@ -8,7 +8,7 @@ import { faunaQueries } from "../fauna/query-manager";
 import { safeVerifyError } from "../fauna/helpers/errors";
 import { toast } from "react-toastify";
 import SessionContext from "../context/session";
-import { ApplicationStateAndSetter } from "../util/types";
+import { ApplicationStateAndSetter } from "../types";
 
 const Home = () => {
   const [state, setState]: ApplicationStateAndSetter = useState({

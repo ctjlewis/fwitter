@@ -2,7 +2,7 @@ import faunadb from "faunadb";
 
 import { setupDatabase, deleteAndCreateDatabase } from "../setup/database";
 
-import { handlePromiseError } from "./../helpers/errors";
+import { handlePromiseError } from "../helpers/errors";
 import { registerWithUser, login } from "./auth";
 import { getFweets, createFweet, createFweetWithoutUDF } from "./fweets";
 import { follow } from "./followers";

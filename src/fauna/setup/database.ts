@@ -13,7 +13,7 @@ import {
   GetFweetsByTagUDF,
   GetFweetsByAuthorUDF,
   FollowUDF,
-} from "../setup/functions";
+} from "./functions";
 
 import {
   CreateFnRoleRegisterWithUser,

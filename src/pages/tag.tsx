@@ -9,7 +9,7 @@ import Nav from "../components/nav";
 
 import { faunaQueries } from "../fauna/query-manager";
 import { safeVerifyError } from "../fauna/helpers/errors";
-import { ApplicationStateAndSetter } from "../util/types";
+import { ApplicationStateAndSetter } from "../types";
 
 const TagPage = () => {
   const { tag }: { tag?: string } = useParams();
