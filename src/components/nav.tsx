@@ -62,7 +62,7 @@ const renderLink = (link, sessionContext) => {
         onClick={(event) => handleLogout(event, sessionContext)}
         key={`nav-link-${link.label}`}
       >
-        <Link key={"link_" + link.label}>{link.label}</Link>
+        <Link to="#" key={"link_" + link.label}>{link.label}</Link>
       </li>
     );
   } else {

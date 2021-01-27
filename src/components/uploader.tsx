@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 
 const Uploader = (props) => {
-  const widget = window.cloudinary.createUploadWidget(
+  const widget = window['cloudinary'].createUploadWidget(
     {
       cloudName: process.env.REACT_APP_LOCAL___CLOUDINARY_CLOUDNAME,
       uploadPreset: process.env.REACT_APP_LOCAL___CLOUDINARY_TEMPLATE,

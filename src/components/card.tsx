@@ -6,11 +6,11 @@ import {
   faHeart,
   faRetweet,
 } from "@fortawesome/free-solid-svg-icons";
+
 import Asset from "./asset";
 
 const Card = (props) => {
-  const [state, setState] = useState(false);
-
+  const [state, setState] = useState("");
   const [content, setContent] = useState("");
 
   const icon =
@@ -118,7 +118,7 @@ const Card = (props) => {
           />
           <div className="icon-text"> {props.fweetAndMore.fweet.comments} </div>
         </div>
-        <div className="icon" onClick={() => startRefweet(props.handleRefweet)}>
+        <div className="icon" onClick={() => startRefweet()}>
           <FontAwesomeIcon
             className={
               props.fweetAndMore.fweetstats.refweet ? "highlight-refweet" : ""
@@ -163,7 +163,7 @@ const Card = (props) => {
         event.preventDefault();
         props.handleRefweet(props.fweetAndMore, content);
         setContent("");
-        setState(false);
+        setState("");
         return false;
       };
       placeholder = "refweet message";
@@ -173,7 +173,7 @@ const Card = (props) => {
         event.preventDefault();
         props.handleComment(props.fweetAndMore, content);
         setContent("");
-        setState(false);
+        setState("");
         return false;
       };
       placeholder = "write your comment";

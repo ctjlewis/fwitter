@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 
 import SessionContext from "../context/session";
-import Card from "../components/card";
+import Card from "./card";
+
 import { safeVerifyError } from "../fauna/helpers/errors";
 import { faunaQueries } from "../fauna/query-manager";
 
@@ -18,7 +19,7 @@ const Feed = (props) => {
     }
     // We are not logged in yet
     else if (!user) {
-      return generateNotLoggedIn(fweets);
+      return generateNotLoggedIn();
     } else if (!loaded) {
       return generateLoading();
     }

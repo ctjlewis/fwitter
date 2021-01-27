@@ -1,7 +1,12 @@
 import React from "react";
 
 const SessionContext = React.createContext({
-  state: {},
+  state: {
+    user: {
+      icon: ''
+    },
+  },
+  dispatch: {},
 });
 
 export const sessionReducer = (state, action) => {
