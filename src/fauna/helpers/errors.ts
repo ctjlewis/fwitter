@@ -13,7 +13,7 @@ const handlePromiseError = (promise, entity) => {
     });
 };
 
-const wrapPromiseError = (promise, entity) => {
+const wrapPromiseError = (promise) => {
   return promise
     .then((data) => {
       return [null, data];

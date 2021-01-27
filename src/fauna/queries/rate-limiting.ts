@@ -75,10 +75,13 @@ function AddRateLimiting(
   action,
   FqlQueryToExecute,
   Identifier,
-  calls,
-  perSeconds
+  calls?,
+  perSeconds?
 ) {
-  let conf = {};
+  let conf = {
+    calls: null,
+    perSeconds: null,
+  };
   if (typeof calls !== "undefined" && typeof perSeconds !== "undefined") {
     conf.calls = calls;
     conf.perSeconds = perSeconds;

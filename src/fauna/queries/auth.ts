@@ -297,7 +297,7 @@ function register(client, email, password) {
     .then((res) => flattenDataKeys(res));
 }
 
-function registerWithUser(client, email, password, name, alias, icon) {
+function registerWithUser(client, email, password, name?, alias?, icon?) {
   return client
     .query(
       Call(q.Function("register_with_user"), email, password, name, alias, icon)

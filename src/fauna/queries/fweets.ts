@@ -1,6 +1,6 @@
 import { flattenDataKeys } from "../helpers/util";
-import { CreateHashtags } from "./../queries/hashtags";
-import { AddRateLimiting } from "./../queries/rate-limiting";
+import { CreateHashtags } from "./hashtags";
+import { AddRateLimiting } from "./rate-limiting";
 
 const faunadb = require("faunadb");
 const q = faunadb.query;
@@ -33,7 +33,7 @@ const {
 
 /* CreateFweet will be used to create a user defined function
  * hence we do not execute it but return an FQL statement instead */
-function CreateFweet(message, tags, asset) {
+function CreateFweet(message, tags, asset?) {
   const FQLStatement = Let(
     {
       hashtagrefs: CreateHashtags(tags),

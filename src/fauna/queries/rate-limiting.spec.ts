@@ -238,7 +238,7 @@ it("Everything is fine if we wait a while", function () {
     .then(
       () =>
         new Promise((resolve, reject) => {
-          setTimeout(() => resolve(), 5000);
+          setTimeout(() => resolve(void 0), 5000);
         })
     )
     .then(() => loggedInClient.query(RateLimitedSillySum))
@@ -272,7 +272,7 @@ it("We can omit the time unit by passing in zeros to ", function () {
       .then(
         () =>
           new Promise((resolve, reject) => {
-            setTimeout(() => resolve(), 5000);
+            setTimeout(() => resolve(void 0), 5000);
           })
       )
       .then(() => loggedInClient.query(RateLimitedSillySum))

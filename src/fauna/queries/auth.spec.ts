@@ -1,6 +1,6 @@
 import faunadb from "faunadb";
 
-import { CreateOrUpdateFunction, CreateAccountUDF } from "./../setup/functions";
+import { CreateOrUpdateFunction, CreateAccountUDF } from "../setup/functions";
 import {
   setupProtectedResource,
   setupDatabaseAuthSpec,
@@ -8,7 +8,7 @@ import {
 } from "../setup/database";
 import { DeleteAllAccounts } from "../setup/accounts";
 
-import { handlePromiseError, wrapPromiseError } from "./../helpers/errors";
+import { handlePromiseError, wrapPromiseError } from "../helpers/errors";
 import { register, login } from "./auth";
 
 // About this spec:
@@ -106,7 +106,7 @@ it("The bootstrap role has the right to call login and register", function () {
       .then(() => login(localClient, "test@test.com", "testtest"))
   ).then(([err, result]) => {
     expect(err).toBe(null);
-  });z
+  });
 }, 60000);
 
 // The function has a role attached to it to be able to create accounts or fetch accounts respecitively.
